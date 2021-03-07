@@ -29,6 +29,7 @@ export default class App extends React.Component {
       currentId: nextQuestionId
     })
   }
+  
 
   selectAnswer = (selectedAnswer, nextQuestionId) => {
     switch (true) {
