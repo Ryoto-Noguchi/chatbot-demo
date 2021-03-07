@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import defaultDataset from "./dataset";
-import './assets/styles/style.css';
-import {AnswersList} from "./components/index"
+import "./assets/styles/style.css";
+import { AnswersList, Chats } from "./components/index"; // componentsフォルダにindex.jsをおいてエントリーポイントとすることで、複数ファイルをインポートする時に1行で済むためコードの可読性が高まる
 
 export default class App extends React.Component {
   constructor(props) {
@@ -11,21 +11,52 @@ export default class App extends React.Component {
       chats: [],
       currentId: "init",
       dataset: defaultDataset,
-      open: false
-    }
+      open: false,
+    };
+    this.selectAnswer = this.selectAnswer.bind(this)
   }
 
-  initAnswer = () => {
-    const initDataset = this.state.dataset[this.state.currentId] // 初期状態ではthis.state.currentId="init"
-    const initAnswers = initDataset.answers // "init"の中のanswersをinitAnswers変数に入れる
+  displayNextQuestion = (nextQuestionId) => {
+    const chats = this.state.chats
+    chats.push({
+      text:this.state.dataset[nextQuestionId].question,
+      type: 'question'
+    })
+
     this.setState({
-      answers: initAnswers // 2行上のinitAnswersをstateのanswersに入れて更新する
+      answers: this.state.dataset[nextQuestionId].answers,
+      chats: chats,
+      currentId: nextQuestionId
     })
   }
 
+  selectAnswer = (selectedAnswer, nextQuestionId) => {
+    switch (true) {
+      case (nextQuestionId === "init"):
+        this.displayNextQuestion(nextQuestionId)
+        break;
+      default:
+        const chats = this.state.chats;
+        chats.push({
+          text: selectedAnswer, // currentIdに入っている値のquestionの値を取得する
+          type: "answer",
+        });
+
+        this.setState({
+          chats: chats
+        });
+
+        this.displayNextQuestion(nextQuestionId);
+        break;
+    }
+  };
+
+
+
   // コンポーネントが初期化して最初のrenderが終わった後に何かしらの副作用がある処理をしたいときにcomponentDidMountを記述する
   componentDidMount() {
-    this.initAnswer() // 下の最初のrenderが走った後にinitAnswerメソッドが走ってinitAnswersのデータがセットされる
+    const initAnswer = ""
+    this.selectAnswer(initAnswer, this.state.currentId)
   }
 
   render() {
@@ -33,9 +64,9 @@ export default class App extends React.Component {
       <div>
         <section className="c-section">
           <div className="c-box">
-            <AnswersList answers={this.state.answers} />
+            <Chats chats={this.state.chats} />
+            <AnswersList answers={this.state.answers} select={this.selectAnswer}/>
           </div>
-
         </section>
       </div>
     );
