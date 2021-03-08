@@ -33,7 +33,13 @@ export default class App extends React.Component {
   selectAnswer = (selectedAnswer, nextQuestionId) => {
     switch (true) {
       case (nextQuestionId === "init"):
-        this.displayNextQuestion(nextQuestionId)
+        setTimeout(() => this.displayNextQuestion(nextQuestionId), 500);
+        break;
+      case(/^https:*/.test(nextQuestionId)): // 「//」の中でjsの正規表現の世界を表し、チェックしたいキーワードを入れて、それに「.test()」を使用して、nextQuestionIdにそのキーワードが含まれているかをチェックする
+        const a = document.createElement('a'); // DOM要素(aタグを作成する)
+        a.href = nextQuestionId; // aタグのhrefに選択された回答に設定されたURLのリンクを挿入する
+        a.target = '_blank'; // 別タブで開くようにする
+        a.click(); // クリックで別タブが開くようにする
         break;
       default:
         const chats = this.state.chats;
@@ -46,7 +52,7 @@ export default class App extends React.Component {
           chats: chats
         });
 
-        this.displayNextQuestion(nextQuestionId);
+        setTimeout(() => this.displayNextQuestion(nextQuestionId), 500); // ユーザーが質問してから少し待ってから回答を表示する際にsetTimeout()を使用する
         break;
     }
   };
@@ -57,6 +63,13 @@ export default class App extends React.Component {
   componentDidMount() {
     const initAnswer = ""
     this.selectAnswer(initAnswer, this.state.currentId)
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const scrollArea = document.getElementById('scroll-area');
+    if (scrollArea) {
+      scrollArea.scrollTop = scrollArea.scrollHeight; // チャットを追加することで増加するチャット領域のHightの値をscrollAreaに代入することで、新しくチャットが追加された時に自動的に最新のチャットが表示されるようにする
+    }
   }
 
   render() {

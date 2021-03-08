@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 const Chats = (props) => {
   const classes = useStyles();
   return (
-  <List className={classes.chats}>
+  <List className={classes.chats} id={"scroll-area"}>
     {props.chats.map((chat, index) => {
       return <Chat text={chat.text} type={chat.type} key={index.toString()}/> // リスト要素の中にkeyを入れておくことで変更があったときに、変更部分のみ書き換えるという設計思想からkeyをリストに含めている
     })}
