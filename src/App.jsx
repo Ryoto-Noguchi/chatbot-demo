@@ -1,7 +1,7 @@
 import React from "react";
 import defaultDataset from "./dataset";
 import "./assets/styles/style.css";
-import { AnswersList, Chats } from "./components/index"; // componentsフォルダにindex.jsをおいてエントリーポイントとすることで、複数ファイルをインポートする時に1行で済むためコードの可読性が高まる
+import { AnswersList, Chats, FormDialog} from "./components/index"; // componentsフォルダにindex.jsをおいてエントリーポイントとすることで、複数ファイルをインポートする時に1行で済むためコードの可読性が高まる
 
 export default class App extends React.Component {
   constructor(props) {
@@ -14,6 +14,8 @@ export default class App extends React.Component {
       open: false,
     };
     this.selectAnswer = this.selectAnswer.bind(this)
+    this.handleClickOpen = this.handleClickOpen.bind(this)
+    this.handleClose = this.handleClose.bind(this)
   }
 
   displayNextQuestion = (nextQuestionId) => {
@@ -35,6 +37,11 @@ export default class App extends React.Component {
       case (nextQuestionId === "init"):
         setTimeout(() => this.displayNextQuestion(nextQuestionId), 500);
         break;
+
+      case (nextQuestionId === 'contact'):
+        this.handleClickOpen();
+        break;
+        
       case(/^https:*/.test(nextQuestionId)): // 「//」の中でjsの正規表現の世界を表し、チェックしたいキーワードを入れて、それに「.test()」を使用して、nextQuestionIdにそのキーワードが含まれているかをチェックする
         const a = document.createElement('a'); // DOM要素(aタグを作成する)
         a.href = nextQuestionId; // aタグのhrefに選択された回答に設定されたURLのリンクを挿入する
@@ -57,6 +64,13 @@ export default class App extends React.Component {
     }
   };
 
+  handleClickOpen = () => {
+    this.setState({open: true});
+  };
+
+  handleClose = () => {
+    this.setState({open: false});
+  };
 
 
   // コンポーネントが初期化して最初のrenderが終わった後に何かしらの副作用がある処理をしたいときにcomponentDidMountを記述する
@@ -79,6 +93,7 @@ export default class App extends React.Component {
           <div className="c-box">
             <Chats chats={this.state.chats} />
             <AnswersList answers={this.state.answers} select={this.selectAnswer}/>
+            <FormDialog open={this.state.open} handleClose={this.handleClose}/>
           </div>
         </section>
       </div>
